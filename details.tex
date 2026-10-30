@@ -1,0 +1,46 @@
+
+
+\documentclass[12pt,a4paper]{report}
+
+% Packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{braket}
+\usepackage{booktabs}
+\usepackage{array}
+
+% Document information
+\title{Monte Carlo}
+
+
+
+\begin{document}
+
+\maketitle
+
+\chapter{Details}
+
+\section{How is it related to MCWF?}
+
+
+In the MCWF method, the quantum state evolves under a non-Hermitian effective Hamiltonian between stochastic quantum jumps.
+
+My .ipynb notebook implements the non-Hermitian time-evolution part, but it does not implement quantum jumps, stochastic trajectory sampling, or ensemble averaging.
+
+Therefore, it is more accurate to describe this notebook as a preliminary numerical study of effective-Hamiltonian evolution rather than a complete MCWF simulation.
+
+There are also two implementation details worth checking: the short-time calculation references psi before it is initialized in the notebook's execution order, and the time array in the evolution loop has a slight mismatch with the number of Euler steps.
+
+
+
+ 
+
+
+\section{Numerical Simulation of a Two-Level Quantum System Using an Effective Hamiltonian}
+
+ This simulation studies the time evolution of a driven two-level quantum system in the presence of decay. A non-Hermitian effective Hamiltonian is used to describe the dynamics, and the time-dependent Schrödinger equation is solved numerically using the Euler method. The resulting state populations are plotted to investigate the system's evolution. This provides a foundation for implementing the Monte Carlo Wave Function method.
+
+
+pdflatex -output-directory=build details.tex
+
+\end{document}
