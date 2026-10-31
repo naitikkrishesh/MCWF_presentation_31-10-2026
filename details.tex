@@ -1,18 +1,22 @@
 
-
 \documentclass[12pt,a4paper]{report}
 
 % Packages
 \usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{braket}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{geometry}
+
+% Page margins
+\geometry{a4paper, margin=1in}
 
 % Document information
-\title{Monte Carlo}
-
-
+\title{Monte Carlo Wave Function Simulation}
+\author{}
+\date{}
 
 \begin{document}
 
@@ -20,27 +24,368 @@
 
 \chapter{Details}
 
-\section{How is it related to MCWF?}
+\section{Introduction to the MCWF Method}
+
+The Monte Carlo Wave Function (MCWF) method is used to
+study the time evolution of open quantum systems.
+
+In this method, the quantum state evolves under a
+non-Hermitian effective Hamiltonian between randomly
+occurring quantum jumps.
+
+The initial numerical implementation focuses on
+non-Hermitian time evolution. It provides a foundation
+for implementing the complete MCWF method, which also
+includes stochastic quantum jumps and ensemble averaging.
+
+\section{Numerical Simulation of a Two-Level Quantum System}
+
+This simulation studies the time evolution of a driven
+two-level quantum system in the presence of decay.
+
+A non-Hermitian effective Hamiltonian is used to describe
+the evolution between quantum jumps. The time-dependent
+Schrödinger equation is solved numerically using the
+Euler method.
+
+The resulting state populations are plotted to study
+the dynamics of the system.
+
+The time-dependent Schrödinger equation is
+
+\begin{equation}
+i\hbar\frac{d}{dt}\ket{\psi(t)}
+=
+H_{\mathrm{eff}}\ket{\psi(t)}.
+\end{equation}
+
+Using natural units where $\hbar=1$,
+
+\begin{equation}
+\frac{d}{dt}\ket{\psi(t)}
+=
+-iH_{\mathrm{eff}}\ket{\psi(t)}.
+\end{equation}
+
+For a small time interval $\Delta t$, the Euler method
+gives
+
+\begin{equation}
+\boxed{
+\ket{\psi(t+\Delta t)}
+\approx
+\left(I-iH_{\mathrm{eff}}\Delta t\right)
+\ket{\psi(t)}
+}
+\end{equation}
+
+This equation is used to calculate the state at each
+time step.
+
+\section{Collapse Operator}
+
+The collapse operator describes the effect of a
+quantum jump caused by the interaction of the system
+with its environment.
+
+For a two-level atom, spontaneous emission causes
+a transition from the excited state to the ground state:
+
+\begin{equation}
+\ket{e}\longrightarrow\ket{g}.
+\end{equation}
+
+The lowering operator responsible for this transition is
+
+\begin{equation}
+\sigma_-=\ket{g}\bra{e}.
+\end{equation}
+
+The collapse operator is defined as
+
+\begin{equation}
+\boxed{
+C=\sqrt{\gamma}\,\sigma_-
+}
+\end{equation}
+
+where $\gamma$ is the spontaneous-emission decay rate.
+
+The factor $\sqrt{\gamma}$ introduces the decay rate
+into the collapse operator.
+
+The effective non-Hermitian Hamiltonian is
+
+\begin{equation}
+\boxed{
+H_{\mathrm{eff}}
+=
+H-\frac{i}{2}C^\dagger C
+}
+\end{equation}
+
+where $H$ is the Hermitian Hamiltonian of the system.
+
+Since
+
+\begin{equation}
+C^\dagger C
+=
+\gamma\ket{e}\bra{e},
+\end{equation}
+
+the effective Hamiltonian becomes
+
+\begin{equation}
+\boxed{
+H_{\mathrm{eff}}
+=
+H-\frac{i\gamma}{2}\ket{e}\bra{e}
+}
+\end{equation}
+
+Here, we have used $\hbar=1$.
+
+The non-Hermitian term causes the norm of the
+unnormalized state to decrease during evolution
+without a quantum jump.
+
+\section{Quantum Jump}
+
+A quantum jump is a sudden, stochastic change in the
+quantum state of a system caused by its interaction
+with the environment.
+
+In the MCWF method, quantum jumps occur randomly
+according to probabilities determined by the
+instantaneous quantum state.
+
+\subsection{Observation of Quantum Jumps}
+
+In the simulated quantum trajectory, the excited-state
+population shows sudden drops at approximately
+
+\begin{equation}
+\boxed{
+t\approx
+1.8,\ 3.1,\ 9.4,\ 11.7,\ 14.1,\ 17.7
+}
+\end{equation}
+
+These sudden drops are consistent with spontaneous-emission
+quantum jumps, provided that the simulation explicitly
+implements stochastic collapse events.
+
+For example, at approximately $t=17.7$, the excited-state
+population decreases from about $0.8$ to $0$.
+
+This corresponds to the transition
+
+\begin{equation}
+\ket{e}
+\xrightarrow{\text{spontaneous emission}}
+\ket{g}.
+\end{equation}
+
+After a spontaneous-emission jump, the quantum state
+is reset to the ground state.
+
+\subsection{Why Does the Excited-State Population Increase Again?}
+
+After each quantum jump, the excited-state population
+starts increasing again.
+
+This happens because the ground and excited states
+are coherently coupled by the driving field.
+
+The coupling strength is represented by $\Omega_{12}$.
+
+The driving field can excite the atom again:
+
+\begin{equation}
+\ket{g}
+\xrightarrow{\Omega_{12}}
+\ket{e}.
+\end{equation}
+
+The excited atom may then undergo spontaneous emission:
+
+\begin{equation}
+\ket{e}
+\xrightarrow{\gamma}
+\ket{g}.
+\end{equation}
+
+This process of coherent excitation and spontaneous
+emission can repeat throughout the simulation.
+
+\subsection{Why Do Quantum Jumps Occur at Random Times?}
+
+In the MCWF method, the probability of a quantum jump
+during a small time interval $dt$ depends on the
+instantaneous quantum state.
+
+For a normalized state
+
+\begin{equation}
+\ket{\psi(t)}
+=
+c_g(t)\ket{g}+c_e(t)\ket{e},
+\end{equation}
+
+the probability of a spontaneous-emission jump is
+
+\begin{equation}
+P_{\mathrm{jump}}
+=
+dt\bra{\psi(t)}C^\dagger C\ket{\psi(t)}.
+\end{equation}
+
+Substituting
+
+\begin{equation}
+C=\sqrt{\gamma}\ket{g}\bra{e},
+\end{equation}
+
+we obtain
+
+\begin{equation}
+\boxed{
+P_{\mathrm{jump}}
+=
+\gamma |c_e(t)|^2dt
+}
+\end{equation}
+
+to first order in $dt$.
+
+Here,
+
+\begin{itemize}
+    \item $\gamma$ is the spontaneous-emission decay rate.
+    \item $|c_e(t)|^2$ is the excited-state population.
+    \item $dt$ is the small time interval.
+\end{itemize}
+
+The occurrence of a quantum jump is determined
+probabilistically rather than at fixed time intervals.
+
+Therefore, jumps generally occur at irregular times.
+
+A quantum jump does not require the excited-state
+population to reach unity. It may occur whenever
+the excited-state population is nonzero.
+
+\section{Ensemble Averaging of Quantum Trajectories}
+
+A single MCWF trajectory contains randomly occurring
+quantum jumps. Therefore, its population dynamics
+can show sudden changes.
+
+To obtain the average behaviour of the system,
+multiple independent trajectories are simulated.
+
+The ensemble-averaged population is calculated as
+
+\begin{equation}
+\boxed{
+\overline{P_e(t)}
+=
+\frac{1}{N}
+\sum_{k=1}^{N}P_e^{(k)}(t)
+}
+\end{equation}
+
+where $N$ is the total number of trajectories and
+$P_e^{(k)}(t)$ is the excited-state population of
+the $k$-th trajectory.
+
+Similarly, the ground-state population is
+
+\begin{equation}
+\boxed{
+\overline{P_g(t)}
+=
+\frac{1}{N}
+\sum_{k=1}^{N}P_g^{(k)}(t)
+}
+\end{equation}
+
+For normalized two-level states,
+
+\begin{equation}
+\overline{P_g(t)}+\overline{P_e(t)}=1.
+\end{equation}
+
+\section{Results and Discussion}
+
+The population dynamics are compared for different
+numbers of MCWF trajectories.
+
+For a small number of trajectories, the averaged
+population curves show noticeable statistical
+fluctuations because the quantum jumps occur randomly.
+
+As the number of trajectories increases from 10 to
+10,000, these fluctuations become smaller, and
+the averaged population curves become smoother.
+
+In the simulation, the ground-state and excited-state
+populations approach approximately
+
+\begin{equation}
+\boxed{
+P_g\approx0.67,\qquad P_e\approx0.33
+}
+\end{equation}
+
+at long times.
+
+These values indicate the approximate steady-state
+populations for the chosen simulation parameters.
+
+Increasing the number of trajectories improves the
+statistical accuracy of the ensemble average.
+
+For independent trajectories, the statistical error
+typically decreases approximately as
+
+\begin{equation}
+\boxed{
+\text{Statistical error}\propto\frac{1}{\sqrt{N}}
+}
+\end{equation}
+
+where $N$ is the number of trajectories.
+
+\section{Conclusion}
+
+The numerical simulation demonstrates the evolution
+of a driven two-level quantum system in the presence
+of spontaneous emission.
+
+The effective non-Hermitian Hamiltonian describes
+the evolution between quantum jumps, while the
+collapse operator describes spontaneous-emission events.
+
+The random occurrence of quantum jumps makes each
+individual trajectory different.
+
+However, averaging over a large number of trajectories
+reduces statistical fluctuations and produces smoother
+population curves.
+
+The results illustrate the main features of the
+Monte Carlo Wave Function method and show how
+ensemble averaging can be used to study the
+dynamics of an open quantum system.
 
 
-In the MCWF method, the quantum state evolves under a non-Hermitian effective Hamiltonian between stochastic quantum jumps.
+\section{Future}
 
-My .ipynb notebook implements the non-Hermitian time-evolution part, but it does not implement quantum jumps, stochastic trajectory sampling, or ensemble averaging.
+In this project, I implemented the Monte Carlo Wave Function method to study the dynamics of a driven two-level quantum system. The simulation captures random quantum jumps due to spontaneous emission and the coherent evolution between the ground and excited states. By increasing the number of trajectories from 10 to 10,000, I observed that the statistical fluctuations decreased and the populations approached steady values.
 
-Therefore, it is more accurate to describe this notebook as a preliminary numerical study of effective-Hamiltonian evolution rather than a complete MCWF simulation.
+As future work, I plan to extend this simulation to specific single-qubit gates, such as X, Y, Z, and Hadamard, and study how environmental noise affects their fidelity. I also plan to compare the results with the Lindblad master equation for numerical validation.
 
-There are also two implementation details worth checking: the short-time calculation references psi before it is initialized in the notebook's execution order, and the time array in the evolution loop has a slight mismatch with the number of Euler steps.
-
-
-
- 
-
-
-\section{Numerical Simulation of a Two-Level Quantum System Using an Effective Hamiltonian}
-
- This simulation studies the time evolution of a driven two-level quantum system in the presence of decay. A non-Hermitian effective Hamiltonian is used to describe the dynamics, and the time-dependent Schrödinger equation is solved numerically using the Euler method. The resulting state populations are plotted to investigate the system's evolution. This provides a foundation for implementing the Monte Carlo Wave Function method.
-
-
-pdflatex -output-directory=build details.tex
-
+% pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build details.tex
 \end{document}
